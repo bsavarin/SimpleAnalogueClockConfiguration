@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport">
+  <br/>
+  <title>Simple Analogue Clock Configuration</title>
+  <link rel="stylesheet" href="slate/dist/css/slate.css">
+  <style>
+	.title {
+		text-align: center; 
+	} 
+  </style>
+</head>
+
+<body>
+<div id="main-form">
+  <H2 class="title">Simple Analogue Clock Configuration</H2>
+    <div class="item-container">
+      <div class="item-container-content">
+        <div class="item">
+         Use this configuration page to choose the settings you would like applied to this app.
+        </div>
+      </div>
+    </div>
+
+    <div class="item-container">
+      <div class="item-container-header">Invert watchface (for Pebble and Pebble Steel only):</div>
+      <div class="item-container-content">
+        <label class="item">
+          Invert watchface
+		  <input id="invert_select" type="checkbox" class="item-toggle" name="toggle-1" />
+        </label>
+      </div>
+      <div class="item-container-footer">
+      </div>
+    </div>
+
+    <div class="item-container">
+      <div class="item-container-header">Colour</div>
+      <div class="item-container-content">
+        <label class="item">
+          Background Colour Picker
+          <input id="bgcolour_display" type="text" class="item-color item-color-normal" name="color-1" value="0x000000">
+        </label>
+		<label class="item">
+          Foreground Colour Picker
+          <input id="fgcolour_display" type="text" class="item-color item-color-normal" name="color-1" value="0x55FF00">
+        </label>
+      </div>
+	  <div class="item-container-footer">The settings above will only change on the watch after pressing the SAVE button below.</div>
+    </div>
+
+    <div class="item-container">
+      <div class="button-container">
+        <input id ="submit_button" type="submit" class="item-button" value="SAVE">
+      </div>
+    </div>
+  </div>
+ </body>
+ 
+ <script type="text/javascript" src="slate/dist/js/slate.js"></script>
+ <script>
+ 
+	(function(){
+		loadOptions();
+		submitHandler();	
+	})();
+ 
+   function getConfigData() {
+        var invertSelect = document.getElementById("invert_select");
+		var bgcolourDisplay = document.getElementById("bgcolour_display");
+		var fgcolourDisplay = document.getElementById("fgcolour_display");
+		
+		var options = {
+          "invert": invertSelect.checked ? "true":"false",
+		  "bgcolour": bgcolourDisplay.value,
+		  "fgcolour": fgcolourDisplay.value
+		};
+			localStorage["invert"] = options.invert;
+			localStorage["bgcolour"] = options.bgcolour;
+			localStorage["fgcolour"] = options.fgcolour;
+
+		console.log('Got options: ' + JSON.stringify(options));	
+        return options;
+      }
+
+	function getQueryParam(variable, default_) {
+			var query = location.search.substring(1);
+			var vars = query.split('&');
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split('=');
+				if (pair[0] == variable) {
+				return decodeURIComponent(pair[1]);
+			}
+		}
+		return default_ || false;
+	}	
+	  
+	  
+	function submitHandler(){
+	  var submitButton = document.getElementById("submit_button");
+	  submitButton.addEventListener("click", 
+		function() {
+			console.log("Submit");
+			var options = getConfigData();
+	  
+	  var return_to = getQueryParam('return_to', 'pebblejs://close#');
+	  document.location = return_to + encodeURIComponent(JSON.stringify(options));
+	  });
+	 }
+	  
+	function loadOptions(){
+	    var invertSelect = document.getElementById("invert_select");
+		var bgcolourDisplay = document.getElementById("bgcolour_display");
+		var fgcolourDisplay = document.getElementById("fgcolour_display");
+		
+		if(localStorage["invert"]) {
+			invertSelect.checked = localStorage["invert"] === "true";
+			bgcolourDisplay.value = localStorage["bgcolour"];
+			fgcolourDisplay.value = localStorage["fgcolour"];
+		}
+	}
+
+  </script>
+  </html>
